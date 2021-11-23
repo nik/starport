@@ -61,6 +61,7 @@ starport scaffold chain github.com/cosmonaut/mars`,
 	}
 
 	c.AddCommand(NewScaffold())
+	c.AddCommand(NewPlugin())
 	c.AddCommand(NewChain())
 	c.AddCommand(NewGenerate())
 	c.AddCommand(NewNetwork())
