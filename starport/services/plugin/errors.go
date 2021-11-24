@@ -1,6 +1,8 @@
 package plugin
 
-import "errors"
+import (
+	"errors"
+)
 
 const (
 	ErrPrefix = "❌️ oops!"

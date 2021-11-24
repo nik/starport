@@ -26,8 +26,12 @@ func Init(c *chain.Chain) ([]plugin, error) {
 		return nil, fmt.Errorf("%s: only git is supported for now, please install it", ErrPrefix)
 	}
 
-	for _, p := range conf.Plugins {
-		p, err := NewPlugin(p.Repo, p.Name)
+	for _, cp := range conf.Plugins {
+		p, err := NewPlugin(cp.Repo, cp.Name)
+		if err != nil {
+			fmt.Printf("%s: %s\n", ErrPrefix, err.Error())
+			continue // we can safely ignore malformed url
+		}
 
 		if p.ValidRepo() {
 			plugs = append(plugs, *p)

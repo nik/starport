@@ -1,6 +1,7 @@
 package starportcmd
 
 import (
+	"fmt"
 	"github.com/tendermint/starport/starport/pkg/clispinner"
 	"github.com/tendermint/starport/starport/services/chain"
 	starplug "github.com/tendermint/starport/starport/services/plugin"
@@ -20,7 +21,7 @@ func NewPluginInstall() *cobra.Command {
 }
 
 func pluginInstallHandler(cmd *cobra.Command, args []string) error {
-	s := clispinner.New().SetText("Fetching Plugins...\n")
+	s := clispinner.New().SetText("Fetching Plugins...")
 	defer s.Stop()
 
 	c, err := newChainWithHomeFlags(cmd, chain.EnableThirdPartyModuleCodegen())
@@ -33,6 +34,15 @@ func pluginInstallHandler(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	err = starplug.Install(cmd.Context(), plugins)
+	installed, err := starplug.Install(cmd.Context(), plugins)
+	if err != nil {
+		return err
+	}
+
+	s.Stop()
+
+	for _, install := range installed {
+		fmt.Printf("\n🎉 %s added. \n\n", *install)
+	}
 	return nil
 }

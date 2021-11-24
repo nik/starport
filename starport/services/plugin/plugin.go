@@ -11,16 +11,20 @@ type plugin struct {
 	Cmd 	*vcs.Cmd
 }
 
+/*
+NewPlugin returns a struct with a well-formed URL <e.g. https://github.com/place/repo>
+as well as access to a built-in go VCS cmd helper which exposes VCS logic (clone, pull, etc)
+ */
 func NewPlugin(url, name string) (*plugin, error) {
-	cmd, err := detectVCS(url)
+	rr, err := parseVCS(url)
 	if err != nil {
 		return nil, err
 	}
 
 	return &plugin{
 		Name: name,
-		RepoUrl: url,
-		Cmd: cmd,
+		RepoUrl: rr.Repo,
+		Cmd: rr.VCS,
 	}, nil
 }
 
@@ -34,10 +38,10 @@ func (p *plugin) ValidRepo() bool {
 	return true
 }
 
-func detectVCS(url string) (*vcs.Cmd, error) {
+func parseVCS(url string) (*vcs.RepoRoot, error) {
 	rr, err := vcs.RepoRootForImportPath(url, false)
 	if err != nil {
 		return nil, err
 	}
-	return rr.VCS, nil
+	return rr, nil
 }
