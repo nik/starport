@@ -63,6 +63,7 @@ type Config struct {
 	Init      Init                   `yaml:"init"`
 	Genesis   map[string]interface{} `yaml:"genesis"`
 	Host      Host                   `yaml:"host"`
+	Plugins   []Plugin               `yaml:"plugins"`
 }
 
 // AccountByName finds account by name.
@@ -85,6 +86,11 @@ type Account struct {
 
 	// The RPCAddress off the chain that account is issued at.
 	RPCAddress string `yaml:"rpc_address,omitempty"`
+}
+
+type Plugin struct {
+	Name string `yaml:"name,omitempty"`
+	Repo string `yaml:"repo"`
 }
 
 // Validator holds info related to validator settings.
