@@ -27,13 +27,6 @@ func Install(ctx context.Context, plugins []plugin) ([]*string, error) {
 		installed = append(installed, &p.Name)
 	}
 
-	// create `.plugins/` folder
-	// cd into it
-	// run local git clone on each repo
-	// cache perhaps
-	// run go build -buildmode=plugin within repo
-	// extract SO file
-
 	return installed, nil
 }
 
