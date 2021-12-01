@@ -44,5 +44,11 @@ func pluginInstallHandler(cmd *cobra.Command, args []string) error {
 	for _, install := range installed {
 		fmt.Printf("\n🎉 %s added. \n\n", *install)
 	}
+
+	starplug.LoadPlugins()
+	loadedPlugins := starplug.GetLoadedPlugins()
+	for _, lp := range loadedPlugins {
+		fmt.Printf("manifest: %+v", lp.Manifest)
+	}
 	return nil
 }

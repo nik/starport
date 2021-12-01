@@ -8,6 +8,7 @@ import (
 type plugin struct {
 	Name    string
 	RepoUrl string
+	InstalledLocation string
 	Cmd 	*vcs.Cmd
 }
 

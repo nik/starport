@@ -3,6 +3,7 @@ package plugin
 import (
 	"context"
 	"fmt"
+	"github.com/tendermint/starport/starport/pkg/cmdrunner/exec"
 	"os"
 )
 
@@ -11,7 +12,8 @@ const pluginFolder = ".plugins"
 // Install fetches all repos from GitHub assuming no dependencies and returns
 // the installed list
 func Install(ctx context.Context, plugins []plugin) ([]*string, error) {
-	var installed []*string
+	var installed []*plugin
+	var built []*string
 
 	err := scaffoldPluginsDir()
 	if err != nil {
@@ -20,14 +22,24 @@ func Install(ctx context.Context, plugins []plugin) ([]*string, error) {
 
 	// TODO check if plugins already exist within folder
 	for _, p := range plugins {
-		err = p.Cmd.Create(installFolder(p.Name), p.RepoUrl)
+		location := installFolder(p.Name)
+		err = p.Cmd.Create(location, p.RepoUrl)
 		if err != nil {
 			return nil, err
 		}
-		installed = append(installed, &p.Name)
+		p.InstalledLocation = location
+		installed = append(installed, &p)
 	}
 
-	return installed, nil
+	for _, p := range installed {
+		err = exec.Exec(ctx, []string{"make", "-C", fmt.Sprintf(".plugins/%s", p.Name), "build"})
+		if err != nil {
+			return []*string{}, err
+		}
+		built = append(built, &p.Name)
+	}
+
+	return built, nil
 }
 
 func scaffoldPluginsDir() error {

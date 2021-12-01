@@ -1,8 +1,8 @@
-package sdk
+package pluginsdk
 
 import (
-	"net/rpc"
 	"github.com/hashicorp/go-plugin"
+	"net/rpc"
 )
 
 // PluginManifest is a test
@@ -10,8 +10,8 @@ type PluginManifest struct {
 	ID, Name, Author, Version string
 }
 
-// StarportPlugin is the interface that we're exposing as a plugin.
-type StarportPlugin interface {
+// Info is the interface that we're exposing as a plugin.
+type Info interface {
 	GetManifest() PluginManifest
 }
 
@@ -30,15 +30,19 @@ func (i *StarportPluginRPC) GetManifest() PluginManifest {
 }
 
 // This is the implementation of hashicorp plugin stuff
-type StartPortPluginSystem struct {
-	Impl StarportPlugin
+type StarportPlugin struct {
+	Impl Info
 }
 
-func (p *StartPortPluginSystem) Server(*plugin.MuxBroker) (interface{}, error) {
-	return &StartPortPluginSystem{Impl: p.Impl}, nil
+func (s *StarportPlugin) GetManifest(args interface{}, resp *PluginManifest) error {
+	*resp = s.Impl.GetManifest()
+	return nil
 }
 
-func (StartPortPluginSystem) Client(b *plugin.MuxBroker, c *rpc.Client) (interface{}, error) {
+func (p *StarportPlugin) Server(*plugin.MuxBroker) (interface{}, error) {
+	return &StarportPlugin{Impl: p.Impl}, nil
+}
+
+func (StarportPlugin) Client(b *plugin.MuxBroker, c *rpc.Client) (interface{}, error) {
 	return &StarportPluginRPC{client: c}, nil
 }
-
